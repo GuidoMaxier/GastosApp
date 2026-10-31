@@ -1,23 +1,12 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { Text, View } from 'react-native'
 
 export default function GastosScreen() {
     return (
-        <View style={styles.container}>
-            <Text style={styles.texto}>Pantalla de Gastos</Text>
-        </View>
+    <View className="flex-1 items-center justify-center bg-white">
+      <Text className="text-xl font-bold text-blue-500">
+        Pagina de los gastos
+      </Text>
+    </View>
     )
 }
-
-const styles = StyleSheet.create({
-    texto: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: 'black', 
-        marginTop: 200,
-    },
-    container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});

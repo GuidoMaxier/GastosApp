@@ -3,11 +3,12 @@ import { StyleSheet, Text, View } from 'react-native';
 import GastosScreen from './src/screens/GastosScreen';
 import BienvenidaScreen from './src/screens/BienvenidaScreen';
 import RegistroScreen from './src/screens/RegistroScreen';
+import "./global.css";
 
 
 export default function App() {
 
-  const pantalla = "registro" 
+  const pantalla = "bienvenida" 
 
   if (pantalla === "bienvenida") {
     return <BienvenidaScreen />
