@@ -1,25 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import GastosScreen from './src/screens/GastosScreen';
+import BienvenidaScreen from './src/screens/BienvenidaScreen';
+import RegistroScreen from './src/screens/RegistroScreen';
+
 
 export default function App() {
+
+  const pantalla = "registro" 
+
+  if (pantalla === "bienvenida") {
+    return <BienvenidaScreen />
+  }
+
+  if (pantalla === "registro") {
+    return <RegistroScreen />
+  }
+
+  if (pantalla === "gastos") {
+    return <GastosScreen />
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>GastosApp</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <BienvenidaScreen />
+      <RegistroScreen />
+      <GastosScreen />
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: "#1e1e1e",
-    fontSize: 30,
-    fontWeight: "bold",
-  },
-});
