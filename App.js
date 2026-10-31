@@ -11,7 +11,7 @@ export default function App() {
   const [screen, setScreen] = useState('bienvenida')
   const [nombre, setNombre] = useState('Anonimo')
 
-  function onScreen(screen) {
+  function onComenzar(screen) {
     setScreen(screen)
   }
 
@@ -25,10 +25,10 @@ return (
     )}
 
     {screen === 'bienvenida' && 
-    <BienvenidaScreen onScreen={onScreen} />}
+    <BienvenidaScreen onComenzar={() => setScreen("registro")} />}
     
     {screen === 'registro' && 
-    <RegistroScreen onScreen={onScreen} />}
+    <RegistroScreen onComenzar={() => setScreen("gastos")}/>}
     
     {screen === 'gastos' && 
     <GastosScreen nombre={nombre}/>}
