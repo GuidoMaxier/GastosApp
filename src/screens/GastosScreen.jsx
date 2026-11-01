@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, ScrollView, KeyboardAvoidingView, Alert, ActivityIndicator, } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect, useMemo } from 'react';
+import {
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+  View,
+  Pressable,
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 
-//Components
-import AjustesModal from '../components/AjustesModal';
-import HeaderUsuario from '../components/HeaderUsuario'
+import {
+  cargarGastos,
+  agregarGasto,
+  editarGasto,
+  eliminarGasto,
+} from '../controllers/GastosController';
+
+// Componentes
+import HeaderUsuario from '../components/HeaderUsuario';
 import TarjetaBalance from '../components/TarjetaBalance';
 import TarjetaGraficoDona from '../components/TarjetaGraficoDona';
 import FiltroCategorias from '../components/FiltroCategorias';
 import ListaGastos from '../components/ListaGastos';
-
-
-import {cargarGastos} from '../controllers/GastosController';
-
+import FormularioGastoModal from '../components/FormularioGastoModal';
 import { CATEGORIAS_LISTA } from '../constants/categorias';
+import AjustesModal from '../components/AjustesModal';
 
 export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
@@ -22,10 +35,24 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
   const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState('TODAS');
 
+  // Formulario Gasto
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingGastoId, setEditingGastoId] = useState(null);
+  const [descripcion, setDescripcion] = useState('');
+  const [monto, setMonto] = useState('');
+  const [categoria, setCategoria] = useState('Alimentación');
+  const [fecha, setFecha] = useState('');
+  const [guardando, setGuardando] = useState(false);
 
-  // Ajustes usuario
+  // Ajuste
   const [profileModalVisible, setProfileModalVisible] = useState(false);
 
+  const getFechaHoy = () => {
+    const d = new Date();
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    return `${dia}/${mes}/${d.getFullYear()}`;
+  };
 
   useEffect(() => {
     async function iniciar() {
@@ -42,12 +69,84 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
     iniciar();
   }, []);
 
-  // Funciones Ajustes usuario
   const handleActualizarNombreModal = async (nuevoNombre) => {
     if (onActualizarNombre) {
       await onActualizarNombre(nuevoNombre);
     }
     setProfileModalVisible(false);
+  };
+
+  const handleOpenCrear = () => {
+    setEditingGastoId(null);
+    setDescripcion('');
+    setMonto('');
+    setCategoria('Alimentación');
+    setFecha(getFechaHoy());
+    setModalVisible(true);
+  };
+
+  const handleOpenEditar = (gasto) => {
+    setEditingGastoId(gasto.id);
+    setDescripcion(gasto.descripcion);
+    setMonto(String(gasto.monto));
+    setCategoria(gasto.categoria);
+    setFecha(gasto.fecha || getFechaHoy());
+    setModalVisible(true);
+  };
+
+  const handleGuardarFormulario = async () => {
+    if (guardando) return;
+
+    try {
+      setGuardando(true);
+      if (editingGastoId) {
+        const nuevos = await editarGasto(
+          gastos,
+          editingGastoId,
+          descripcion,
+          monto,
+          categoria,
+          fecha
+        );
+        setGastos(nuevos);
+      } else {
+        const nuevos = await agregarGasto(
+          gastos,
+          descripcion,
+          monto,
+          categoria,
+          fecha
+        );
+        setGastos(nuevos);
+      }
+      setModalVisible(false);
+    } catch (error) {
+      Alert.alert('Atención', error.message || 'Error al guardar el gasto.');
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const handleEliminar = (id, desc) => {
+    Alert.alert(
+      'Eliminar gasto',
+      `¿Deseas eliminar "${desc}"?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Eliminar',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const nuevos = await eliminarGasto(gastos, id);
+              setGastos(nuevos);
+            } catch (error) {
+              Alert.alert('Error', 'No se pudo eliminar el gasto.');
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleReiniciarTodo = () => {
@@ -70,6 +169,7 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
     );
   };
 
+  // Para para la componente dona etc
   const totalGastado = useMemo(() => {
     return gastos.reduce((sum, item) => sum + item.monto, 0);
   }, [gastos]);
@@ -122,7 +222,6 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-
           <HeaderUsuario
             userName={userName}
             onAbrirAjustes={() => setProfileModalVisible(true)}
@@ -148,10 +247,42 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
 
           <ListaGastos
             gastos={gastosFiltrados}
+            onEliminarGasto={handleEliminar}
+            onEditarGasto={handleOpenEditar}
+            onAgregarClick={handleOpenCrear}
           />
-
         </ScrollView>
+
+        <View
+          className="absolute right-5"
+          style={{ bottom: Math.max(insets.bottom + 16, 28) }}
+        >
+          <Pressable
+            className="bg-stone-900 rounded-full items-center justify-center shadow-lg active:bg-stone-800"
+            style={{ width: 60, height: 60 }}
+            onPress={handleOpenCrear}
+            accessibilityLabel="Agregar nuevo gasto"
+          >
+            <Ionicons name="add" size={36} color="#FFFFFF" />
+          </Pressable>
+        </View>
       </KeyboardAvoidingView>
+
+      <FormularioGastoModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        descripcion={descripcion}
+        setDescripcion={setDescripcion}
+        monto={monto}
+        setMonto={setMonto}
+        categoria={categoria}
+        setCategoria={setCategoria}
+        fecha={fecha}
+        setFecha={setFecha}
+        onGuardar={handleGuardarFormulario}
+        modoEdicion={editingGastoId !== null}
+        guardando={guardando}
+      />
 
       <AjustesModal
         visible={profileModalVisible}
