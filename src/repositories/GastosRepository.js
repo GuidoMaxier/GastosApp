@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const CLAVE_GASTOS = 'gastos';
 
 // Ejemplos
@@ -32,3 +34,21 @@ export const gastosIniciales = [
   },
 ];
 
+export async function obtenerGastos() {
+  const datosGuardados = await AsyncStorage.getItem(CLAVE_GASTOS);
+
+  if (datosGuardados !== null) {
+    return JSON.parse(datosGuardados);
+  }
+
+  await guardarGastos(gastosIniciales);
+  return gastosIniciales;
+}
+
+export async function guardarGastos(gastos) {
+  await AsyncStorage.setItem(CLAVE_GASTOS, JSON.stringify(gastos));
+}
+
+export async function restablecerGastos() {
+  await AsyncStorage.removeItem(CLAVE_GASTOS);
+}

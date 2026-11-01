@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
+import { Platform, ScrollView, KeyboardAvoidingView, Alert, ActivityIndicator, } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect, useMemo } from 'react';
 
@@ -8,6 +8,8 @@ import AjustesModal from '../components/AjustesModal';
 import HeaderUsuario from '../components/HeaderUsuario'
 import TarjetaBalance from '../components/TarjetaBalance';
 import TarjetaGraficoDona from '../components/TarjetaGraficoDona';
+import FiltroCategorias from '../components/FiltroCategorias';
+
 
 import { gastosIniciales } from '../controllers/GastosController';
 import { CATEGORIAS_LISTA } from '../constants/categorias';
@@ -15,6 +17,8 @@ import { CATEGORIAS_LISTA } from '../constants/categorias';
 export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
   const [gastos, setGastos] = useState(gastosIniciales);
+  const [cargando, setCargando] = useState(false); // 
+  const [filtroCategoria, setFiltroCategoria] = useState('TODAS');
 
 
   // Ajustes usuario
@@ -70,6 +74,20 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
     });
   }, [gastos]);
 
+  const gastosFiltrados = useMemo(() => {
+    if (filtroCategoria === 'TODAS') return gastos;
+    return gastos.filter((g) => g.categoria === filtroCategoria);
+  }, [gastos, filtroCategoria]);
+
+  if (cargando) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-white">
+        <StatusBar style="dark" />
+        <ActivityIndicator size="large" color="#4F46E5" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-[#F7E7CE]" edges={['top', 'left', 'right']}>
       <StatusBar style="dark" />
@@ -101,6 +119,13 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
           <TarjetaGraficoDona
             data={donutData}
             total={totalGastado}
+          />
+
+          <FiltroCategorias
+            categorias={CATEGORIAS_LISTA}
+            categoriaSeleccionada={filtroCategoria}
+            onSeleccionar={setFiltroCategoria}
+            gastos={gastosFiltrados}
           />
 
         </ScrollView>
