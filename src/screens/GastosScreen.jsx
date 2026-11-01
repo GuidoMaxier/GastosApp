@@ -12,18 +12,35 @@ import FiltroCategorias from '../components/FiltroCategorias';
 import ListaGastos from '../components/ListaGastos';
 
 
-import { gastosIniciales } from '../controllers/GastosController';
+import {cargarGastos} from '../controllers/GastosController';
+
 import { CATEGORIAS_LISTA } from '../constants/categorias';
 
 export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
-  const [gastos, setGastos] = useState(gastosIniciales);
-  const [cargando, setCargando] = useState(false); // 
+  const [gastos, setGastos] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [filtroCategoria, setFiltroCategoria] = useState('TODAS');
 
 
   // Ajustes usuario
   const [profileModalVisible, setProfileModalVisible] = useState(false);
+
+
+  useEffect(() => {
+    async function iniciar() {
+      try {
+        const gastosGuardados = await cargarGastos();
+        setGastos(gastosGuardados);
+      } catch (error) {
+        Alert.alert('Error', 'No se pudieron inicializar los gastos.');
+      } finally {
+        setCargando(false);
+      }
+    }
+
+    iniciar();
+  }, []);
 
   // Funciones Ajustes usuario
   const handleActualizarNombreModal = async (nuevoNombre) => {
