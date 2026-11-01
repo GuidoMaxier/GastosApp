@@ -1,12 +1,49 @@
 import { StatusBar } from 'expo-status-bar';
-import { Platform, ScrollView, KeyboardAvoidingView } from 'react-native';
+import { Platform, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useState, useEffect } from 'react';
 
-
+//Components
+import AjustesModal from '../components/AjustesModal';
 import HeaderUsuario from '../components/HeaderUsuario'
 
-export default function GastosScreen({userName}) {
+export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
+
+  // Ajustes usuario
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+
+
+
+  // Funciones Ajustes usuario
+  const handleActualizarNombreModal = async (nuevoNombre) => {
+    if (onActualizarNombre) {
+      await onActualizarNombre(nuevoNombre);
+    }
+    setProfileModalVisible(false);
+  };
+
+  const handleReiniciarTodo = () => {
+    Alert.alert(
+      'Reiniciar App',
+      '¿Estás seguro? Se borrarán todos los gastos y tu nombre guardado.',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Sí, reiniciar',
+          style: 'destructive',
+          onPress: async () => {
+            setProfileModalVisible(false);
+            if (onReiniciarApp) {
+              await onReiniciarApp();
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
   return (
     <SafeAreaView className="flex-1 bg-[#F7E7CE]" edges={['top', 'left', 'right']}>
       <StatusBar style="dark" />
@@ -29,9 +66,17 @@ export default function GastosScreen({userName}) {
             onAbrirAjustes={() => setProfileModalVisible(true)}
           />
 
-        
-        </ScrollView>    
+
+        </ScrollView>
       </KeyboardAvoidingView>
+
+      <AjustesModal
+        visible={profileModalVisible}
+        onClose={() => setProfileModalVisible(false)}
+        nombreActual={userName}
+        onGuardarNombre={handleActualizarNombreModal}
+        onReiniciarTodo={handleReiniciarTodo}
+      />
     </SafeAreaView>
   );
 }

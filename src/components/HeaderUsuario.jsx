@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function HeaderUsuario({ userName }) {
+export default function HeaderUsuario({ userName, onAbrirAjustes }) {
   return (
     <View className="flex-row items-center justify-between mb-5 mt-2 px-1">
       <View>
@@ -14,7 +14,7 @@ export default function HeaderUsuario({ userName }) {
       </View>
 
       <Pressable
-
+        onPress={onAbrirAjustes}
         className="w-11 h-11 rounded-full bg-white border border-stone-200/80 items-center justify-center shadow-sm active:bg-stone-50"
         accessibilityLabel="Abrir configuración y perfil"
       >

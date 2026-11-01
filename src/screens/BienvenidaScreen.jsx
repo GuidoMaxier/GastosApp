@@ -1,16 +1,18 @@
-import { View, Text, Pressable, ImageBackground } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 
+const image = require('../../assets/Fondo_libertad.jpg');
 
 export default function BienvenidaScreen({ onComenzar }) {
     return (
-        <ImageBackground
-            source={require('../../assets/Fondo_libertad.jpg')}
-            className="flex-1 w-full h-full"
-            resizeMode="cover"
-        >
+        <View className="flex-1 w-full h-full">
+            <Image
+                source={image}
+                className="absolute w-full h-full"
+                resizeMode="cover"
+            />
             <StatusBar style="light" />
 
             <LinearGradient
@@ -47,7 +49,7 @@ export default function BienvenidaScreen({ onComenzar }) {
                     </Pressable>
                 </View>
             </SafeAreaView>
-        </ImageBackground>
+        </View>
     );
 }
 
