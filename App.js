@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
-import GastosScreen from './src/screens/GastosScreen';
-import BienvenidaScreen from './src/screens/BienvenidaScreen';
-import RegistroScreen from './src/screens/RegistroScreen';
 import "./global.css";
+import { useState } from 'react';
+import { View, Text } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
+// Los controllers
 import {
   guardarUsuario,
 } from './src/controllers/UsuarioController';
 
+//Las pantallas
+import GastosScreen from './src/screens/GastosScreen';
+import BienvenidaScreen from './src/screens/BienvenidaScreen';
+import RegistroScreen from './src/screens/RegistroScreen';
 
 export default function App() {
   const [screen, setScreen] = useState('bienvenida');
@@ -30,7 +32,7 @@ export default function App() {
 
 
   return (
-    <>
+     <SafeAreaProvider>
 
       {screen === 'cargando' && (
         <View className="flex-1 items-center justify-center">
@@ -47,9 +49,9 @@ export default function App() {
           onVolver={() => setScreen("bienvenida")} />}
 
       {screen === 'gastos' &&
-        <GastosScreen nombre={userName} />}
+        <GastosScreen userName={userName} />}
 
-    </>
+     </SafeAreaProvider>
   );
 
 }
