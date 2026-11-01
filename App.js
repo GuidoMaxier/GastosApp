@@ -1,6 +1,6 @@
 import "./global.css";
 import { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Los controllers
