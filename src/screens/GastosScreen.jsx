@@ -7,8 +7,10 @@ import { useState, useEffect, useMemo } from 'react';
 import AjustesModal from '../components/AjustesModal';
 import HeaderUsuario from '../components/HeaderUsuario'
 import TarjetaBalance from '../components/TarjetaBalance';
+import TarjetaGraficoDona from '../components/TarjetaGraficoDona';
 
 import { gastosIniciales } from '../controllers/GastosController';
+import { CATEGORIAS_LISTA } from '../constants/categorias';
 
 export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
@@ -17,8 +19,6 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
 
   // Ajustes usuario
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-
-
 
   // Funciones Ajustes usuario
   const handleActualizarNombreModal = async (nuevoNombre) => {
@@ -57,6 +57,18 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
     return gastos.reduce((max, item) => (item.monto > max.monto ? item : max), gastos[0]);
   }, [gastos]);
 
+  const donutData = useMemo(() => {
+    return CATEGORIAS_LISTA.map((cat) => {
+      const totalCat = gastos
+        .filter((g) => g.categoria === cat.id)
+        .reduce((sum, g) => sum + g.monto, 0);
+      return {
+        label: cat.label,
+        value: totalCat,
+        color: cat.color,
+      };
+    });
+  }, [gastos]);
 
   return (
     <SafeAreaView className="flex-1 bg-[#F7E7CE]" edges={['top', 'left', 'right']}>
@@ -84,6 +96,11 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
             total={totalGastado}
             cantidadGastos={gastos.length}
             mayorConsumo={gastoMasAlto}
+          />
+
+          <TarjetaGraficoDona
+            data={donutData}
+            total={totalGastado}
           />
 
         </ScrollView>
