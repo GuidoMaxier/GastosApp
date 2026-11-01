@@ -9,6 +9,7 @@ import HeaderUsuario from '../components/HeaderUsuario'
 import TarjetaBalance from '../components/TarjetaBalance';
 import TarjetaGraficoDona from '../components/TarjetaGraficoDona';
 import FiltroCategorias from '../components/FiltroCategorias';
+import ListaGastos from '../components/ListaGastos';
 
 
 import { gastosIniciales } from '../controllers/GastosController';
@@ -125,6 +126,10 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
             categorias={CATEGORIAS_LISTA}
             categoriaSeleccionada={filtroCategoria}
             onSeleccionar={setFiltroCategoria}
+            gastos={gastosFiltrados}
+          />
+
+          <ListaGastos
             gastos={gastosFiltrados}
           />
 
