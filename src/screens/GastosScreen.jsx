@@ -1,14 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { Platform, ScrollView, KeyboardAvoidingView, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 //Components
 import AjustesModal from '../components/AjustesModal';
 import HeaderUsuario from '../components/HeaderUsuario'
+import TarjetaBalance from '../components/TarjetaBalance';
+
+import { gastosIniciales } from '../controllers/GastosController';
 
 export default function GastosScreen({ userName, onActualizarNombre, onReiniciarApp }) {
   const insets = useSafeAreaInsets();
+  const [gastos, setGastos] = useState(gastosIniciales);
+
 
   // Ajustes usuario
   const [profileModalVisible, setProfileModalVisible] = useState(false);
@@ -43,6 +48,15 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
     );
   };
 
+  const totalGastado = useMemo(() => {
+    return gastos.reduce((sum, item) => sum + item.monto, 0);
+  }, [gastos]);
+
+  const gastoMasAlto = useMemo(() => {
+    if (gastos.length === 0) return null;
+    return gastos.reduce((max, item) => (item.monto > max.monto ? item : max), gastos[0]);
+  }, [gastos]);
+
 
   return (
     <SafeAreaView className="flex-1 bg-[#F7E7CE]" edges={['top', 'left', 'right']}>
@@ -66,6 +80,11 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
             onAbrirAjustes={() => setProfileModalVisible(true)}
           />
 
+          <TarjetaBalance
+            total={totalGastado}
+            cantidadGastos={gastos.length}
+            mayorConsumo={gastoMasAlto}
+          />
 
         </ScrollView>
       </KeyboardAvoidingView>
