@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/datetimepicker": "9.2.1",
     "datetimepicker": "^0.1.39",
     "expo": "~58.0.22",
     "expo-linear-gradient": "~58.0.3",
