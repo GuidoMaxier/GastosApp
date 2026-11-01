@@ -160,6 +160,7 @@ export default function GastosScreen({ userName, onActualizarNombre, onReiniciar
           style: 'destructive',
           onPress: async () => {
             setProfileModalVisible(false);
+            setGastos([]);
             if (onReiniciarApp) {
               await onReiniciarApp();
             }

@@ -19,7 +19,7 @@ import BienvenidaScreen from './src/screens/BienvenidaScreen';
 import RegistroScreen from './src/screens/RegistroScreen';
 
 export default function App() {
-  const [screen, setScreen] = useState('bienvenida');
+  const [screen, setScreen] = useState('cargando');
   const [userName, setUserName] = useState('');
 
   const handleGuardarNombre = async (nombreIngresado) => {
